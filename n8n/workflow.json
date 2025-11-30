@@ -1,0 +1,124 @@
+{
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "generate-questions",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                -240,
+                256
+            ],
+            "id": "f6e49150-b9e2-49f5-b932-f8bb56159240",
+            "webhookId": "861f810f-0f10-4c00-bc3d-cf4f1bced304"
+        },
+        {
+            "parameters": {
+                "modelId": {
+                    "__rl": true,
+                    "value": "models/gemini-2.5-pro",
+                    "mode": "list",
+                    "cachedResultName": "models/gemini-2.5-pro"
+                },
+                "messages": {
+                    "values": [
+                        {
+                            "content": "=`You are an EXAM QUESTION GENERATOR. Your ONLY job is to create exam questions about the EXACT topic specified.\\n\\n═══════════════════════════════════════════════════════════\\n📌 TOPIC: \\\"${$('Webhook').item.json.body.topic}\\\"\\n📊 QUANTITY: ${$('Webhook').item.json.body.numberOfQuestions} questions\\n📈 DIFFICULTY: ${$('Webhook').item.json.body.difficulty}\\n═══════════════════════════════════════════════════════════\\n\\n🚨 CRITICAL RULES:\\n1. ALL questions MUST be about \\\"${$('Webhook').item.json.body.topic}\\\" - NO EXCEPTIONS\\n2. If \\\"${$('Webhook').item.json.body.topic}\\\" = \\\"World History\\\" → ask about wars, empires, civilizations, historical events\\n3. If \\\"${$('Webhook').item.json.body.topic}\\\" = \\\"Python\\\" → ask about Python syntax, libraries, code\\n4. NEVER ask about unrelated topics (DevOps, Docker, Kubernetes, etc.) unless that IS the topic\\n\\n═══════════════════════════════════════════════════════════\\n📚 EXAMPLES (LEARN FROM THESE):\\n═══════════════════════════════════════════════════════════\\n\\nEXAMPLE 1 - Topic: \\\"World History\\\"\\n✅ CORRECT:\\n{\\n  \\\"id\\\": 1,\\n  \\\"text\\\": \\\"Which empire was known for its extensive road system and lasted from 27 BC to 476 AD?\\\",\\n  \\\"options\\\": [\\\"Roman Empire\\\", \\\"Ottoman Empire\\\", \\\"British Empire\\\", \\\"Mongol Empire\\\"],\\n  \\\"correctAnswer\\\": \\\"Roman Empire\\\",\\n  \\\"explanation\\\": \\\"The Roman Empire was famous for its roads and lasted approximately 500 years.\\\"\\n}\\n\\n❌ WRONG (This is about software, not history!):\\n{\\n  \\\"text\\\": \\\"What is the purpose of Docker in DevOps?\\\"\\n}\\n\\nEXAMPLE 2 - Topic: \\\"Python Programming\\\"\\n✅ CORRECT:\\n{\\n  \\\"id\\\": 1,\\n  \\\"text\\\": \\\"What will print(type([1, 2, 3])) output in Python?\\\",\\n  \\\"options\\\": [\\\"<class 'list'>\\\", \\\"<class 'tuple'>\\\", \\\"<class 'dict'>\\\", \\\"<class 'set'>\\\"],\\n  \\\"correctAnswer\\\": \\\"<class 'list'>\\\",\\n  \\\"explanation\\\": \\\"[1, 2, 3] is a list in Python, so type() returns <class 'list'>.\\\"\\n}\\n\\n❌ WRONG (This is about history, not Python!):\\n{\\n  \\\"text\\\": \\\"When did World War II end?\\\"\\n}\\n\\n═══════════════════════════════════════════════════════════\\n⚙️ YOUR TASK NOW:\\n═══════════════════════════════════════════════════════════\\n\\nTopic: \\\"${$('Webhook').item.json.body.topic}\\\"\\n\\nSTEP 1: Ask yourself: \\\"What is '${$('Webhook').item.json.body.topic}' about?\\\"\\nSTEP 2: Create ${$('Webhook').item.json.body.numberOfQuestions} questions ONLY about that topic\\nSTEP 3: For each question, verify: \\\"Is this about ${$('Webhook').item.json.body.topic}?\\\"\\nSTEP 4: If NO → DELETE and create a new question\\n\\n═══════════════════════════════════════════════════════════\\n📋 OUTPUT FORMAT (RETURN THIS EXACT STRUCTURE):\\n═══════════════════════════════════════════════════════════\\n\\nReturn ONLY a JSON array. NO markdown code blocks. NO extra text.\\n\\n[\\n  {\\n    \\\"id\\\": 1,\\n    \\\"text\\\": \\\"Question about ${$('Webhook').item.json.body.topic}\\\",\\n    \\\"options\\\": [\\\"A\\\", \\\"B\\\", \\\"C\\\", \\\"D\\\"],\\n    \\\"correctAnswer\\\": \\\"One of A/B/C/D\\\",\\n    \\\"explanation\\\": \\\"Why this is correct\\\"\\n  },\\n  {\\n    \\\"id\\\": 2,\\n    \\\"text\\\": \\\"Another question about ${$('Webhook').item.json.body.topic}\\\",\\n    \\\"options\\\": [\\\"A\\\", \\\"B\\\", \\\"C\\\", \\\"D\\\"],\\n    \\\"correctAnswer\\\": \\\"One of A/B/C/D\\\",\\n    \\\"explanation\\\": \\\"Why this is correct\\\"\\n  }\\n]\\n\\n⚠️ REMEMBER: If you generate even ONE question NOT about \\\"${$('Webhook').item.json.body.topic}\\\", you FAILED.\\n\\nGenerate ${$('Webhook').item.json.body.numberOfQuestions} questions about \\\"${$('Webhook').item.json.body.topic}\\\" now:`"
+                        }
+                    ]
+                },
+                "options": {
+                    "maxOutputTokens": 4096,
+                    "temperature": 0,
+                    "topP": 0.1,
+                    "topK": 1
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.googleGemini",
+            "typeVersion": 1,
+            "position": [
+                80,
+                256
+            ],
+            "id": "10fa5be9-a30f-4a4c-9a59-80334afda409",
+            "name": "Generate Questions",
+            "credentials": {
+                "googlePalmApi": {
+                    "id": "06HF5PzCP8l7dlM3",
+                    "name": "Google Gemini(PaLM) Api account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Lấy item đầu tiên từ node \"Generate Questions\"\nlet input = $input.first().json;\n\n// Trường hợp input là mảng [ { ... } ]\nif (Array.isArray(input)) {\n  input = input[0];\n}\n\nlet text = '';\n\n// 1. Đúng format Gemini: content.parts[].text\nif (input?.content?.parts && Array.isArray(input.content.parts)) {\n  text = input.content.parts\n    .map(p => p.text || '')\n    .join('\\n');\n} else if (typeof input.text === 'string') {\n  // fallback nếu node trả thẳng text\n  text = input.text;\n} else {\n  // fallback cuối cùng\n  text = JSON.stringify(input);\n}\n\ntext = String(text).trim();\n\n// 2. Bóc phần JSON nếu bị bọc trong ```json ... ```\nconst fenceMatch = text.match(/```json\\s*([\\s\\S]*?)```/i);\nlet jsonStr = (fenceMatch ? fenceMatch[1] : text).trim();\n\n// 3. Parse thẳng, KHÔNG unescape thêm gì nữa\nlet questions;\ntry {\n  questions = JSON.parse(jsonStr);\n} catch (e) {\n  throw new Error(\n    'Failed to parse JSON from Gemini: ' +\n    e.message +\n    '\\nRaw: ' +\n    jsonStr.slice(0, 400)\n  );\n}\n\n// 4. Đảm bảo là mảng\nif (!Array.isArray(questions)) {\n  throw new Error('Expected an array of questions.');\n}\n\n// 5. Trả về 1 item duy nhất chứa mảng questions\nreturn [\n  {\n    json: {\n      questions: questions,\n    },\n  },\n];\n"
+            },
+            "name": "Parse JSON",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 1,
+            "position": [
+                400,
+                256
+            ],
+            "id": "4da6cdb0-61a2-4e6b-a2bf-d03a9c082d0f"
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                624,
+                256
+            ],
+            "id": "9174ebd2-3a9b-4724-81e6-8f9e24bbc8e1"
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Questions",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Questions": {
+            "main": [
+                [
+                    {
+                        "node": "Parse JSON",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse JSON": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "13a310ace2cfc6345472c5b0dd52f88e82c2be5a7d0359ad8021d3daf1c33ae1"
+    }
+}
